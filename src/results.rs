@@ -149,6 +149,7 @@ pub struct CallChainResult<'a, S: ?Sized, R> {
 	/// The result of the chained function.
 	pub result: R
 }
+
 impl<S: ?Sized, R> CallChainResult<'_, S, R> {
 	#[inline]
 	/// Returns the result of the chained function.
@@ -156,21 +157,14 @@ impl<S: ?Sized, R> CallChainResult<'_, S, R> {
 		self.result
 	}
 }
+
 impl<S: ?Sized, R> AsRef<S> for CallChainResult<'_, S, R> {
 	#[inline]
 	fn as_ref(&self) -> &S {
 		self.this
 	}
 }
-impl<S: ?Sized, T> CallChain<S> for CallChainResult<'_, S, T> {
-	#[inline]
-	fn chain<R, F: FnOnce(&S) -> R>(&self, f: F) -> CallChainResult<'_, S, R> {
-		CallChainResult {
-			result: f(self.this),
-			this: self.this
-		}
-	}
-}
+
 impl<S: ?Sized, R> core::ops::Deref for CallChainResult<'_, S, R> {
 	type Target = R;
 
@@ -186,6 +180,16 @@ impl<S: ?Sized, R> core::ops::DerefMut for CallChainResult<'_, S, R> {
 	}
 }
 
+impl<S: ?Sized, T> CallChain<S> for CallChainResult<'_, S, T> {
+	#[inline]
+	fn chain<R, F: FnOnce(&S) -> R>(&self, f: F) -> CallChainResult<'_, S, R> {
+		CallChainResult {
+			result: f(self.this),
+			this: self.this
+		}
+	}
+}
+
 /// A result from a call chain. Dereferences to the return value but can also be used to chain further, mutably.
 pub struct CallChainResultMut<'a, S: ?Sized, R> {
 	this: &'a mut S,
@@ -193,6 +197,7 @@ pub struct CallChainResultMut<'a, S: ?Sized, R> {
 	/// The result of the chained function.
 	pub result: R
 }
+
 impl<S: ?Sized, R> CallChainResultMut<'_, S, R> {
 	#[inline]
 	/// Returns the result of the chained function.
@@ -200,6 +205,7 @@ impl<S: ?Sized, R> CallChainResultMut<'_, S, R> {
 		self.result
 	}
 }
+
 impl<S: ?Sized, R> AsRef<S> for CallChainResultMut<'_, S, R> {
 	#[inline]
 	fn as_ref(&self) -> &S {
@@ -210,6 +216,21 @@ impl<S: ?Sized, R> AsMut<S> for CallChainResultMut<'_, S, R> {
 	#[inline]
 	fn as_mut(&mut self) -> &mut S {
 		self.this
+	}
+}
+
+impl<S: ?Sized, R> core::ops::Deref for CallChainResultMut<'_, S, R> {
+	type Target = R;
+
+	#[inline]
+	fn deref(&self) -> &R {
+		&self.result
+	}
+}
+impl<S: ?Sized, R> core::ops::DerefMut for CallChainResultMut<'_, S, R> {
+	#[inline]
+	fn deref_mut(&mut self) -> &mut R {
+		&mut self.result
 	}
 }
 
@@ -229,19 +250,5 @@ impl<S: ?Sized, T> CallChainMut<S> for CallChainResultMut<'_, S, T> {
 			result: f(self.this),
 			this: self.this
 		}
-	}
-}
-impl<S: ?Sized, R> core::ops::Deref for CallChainResultMut<'_, S, R> {
-	type Target = R;
-
-	#[inline]
-	fn deref(&self) -> &R {
-		&self.result
-	}
-}
-impl<S: ?Sized, R> core::ops::DerefMut for CallChainResultMut<'_, S, R> {
-	#[inline]
-	fn deref_mut(&mut self) -> &mut R {
-		&mut self.result
 	}
 }

@@ -1,0 +1,13 @@
+[package]
+name = "chainer"
+version = "0.1.1"
+edition = "2021"
+description = "A cursed crate that allows for global call chaining with access to chained function results"
+authors = ["William Venner <william@venner.io>"]
+license = "MIT"
+keywords = ["chainer", "chaining", "chain"]
+categories = ["rust-patterns"]
+repository = "https://github.com/WilliamVenner/chainer"
+
+[features]
+results = []
